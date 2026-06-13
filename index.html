@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterioPlan Pro - Luxury Wood Craft & Sourcing Studio</title>
+    
+    <!-- Bootstrap 5.3.2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Pro Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Premium Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --wood-dark: #3e2723;       /* Premium Roasted Walnut */
+            --wood-medium: #795548;     /* Warm Partex Amber */
+            --wood-light: #d7ccc8;      /* Natural Oak Cream */
+            --studio-bg: #fdfbf7;       /* Soft Linen Paper Warm White */
+            --studio-surface: #ffffff;  /* Solid White Canvas */
+            --studio-surface-muted: #f4ece1; /* Textured Wood Pulp Tone */
+            --accent-gold: #b57c1e;     /* Polished Brass/Gold Accent */
+            --text-primary: #2d2219;    /* Dark Espresso Text */
+            --text-secondary: #6d5d50;  /* Subdued Clay Text */
+            --border-studio: #e8dfd5;   /* Veneer Border Lining */
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --font-serif: 'Playfair Display', serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--studio-bg);
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            scroll-behavior: smooth;
+        }
+
+        /* High-Contrast Readability Utilities */
+        .text-important { color: var(--text-primary) !important; font-weight: 600; }
+        .text-dimmed { color: var(--text-secondary) !important; }
+
+        /* Premium Organic Navbar */
+        .studio-navbar {
+            background-color: rgba(253, 251, 247, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-studio);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+        }
+        .navbar-brand {
+            font-family: var(--font-serif);
+            font-size: 1.6rem;
+            color: var(--text-primary) !important;
+            font-weight: 700;
+        }
+        .navbar-brand span { color: var(--accent-gold); }
+        .studio-nav-link {
+            color: var(--text-secondary) !important;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 20px !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .studio-nav-link:hover, .studio-nav-link.active {
+            color: var(--wood-dark) !important;
+            background-color: var(--studio-surface-muted);
+        }
+
+        /* Immersive Large Hero Section Architecture */
+        .studio-immersive-hero {
+            position: relative;
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(45, 34, 25, 0.55), rgba(45, 34, 25, 0.35)), 
+                        url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1920&q=90') no-repeat center center/cover;
+            padding-top: 100px;
+            border-bottom: 4px solid var(--wood-medium);
+        }
+        .hero-glass-panel {
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 20px 40px rgba(45, 34, 25, 0.15);
+        }
+
+        /* Base Section Layout */
+        section { padding: 90px 0 40px 0; }
+
+        /* Metric Widgets */
+        .metric-card {
+            background-color: var(--studio-surface);
+            border: 1px solid var(--border-studio);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 12px rgba(109, 93, 80, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 6px; height: 100%;
+            background-color: transparent;
+        }
+        .metric-card.active-metric::before { background-color: var(--wood-medium); }
+        .metric-icon {
+            width: 54px; height: 54px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        /* Moodboard Framework Component Layout */
+        .mood-card {
+            background-color: var(--studio-surface);
+            border: 1px solid var(--border-studio);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(109, 93, 80, 0.04);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+        }
+        .mood-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 28px rgba(109, 93, 80, 0.12);
+            border-color: var(--wood-medium);
+        }
+        .mood-img-wrapper {
+            position: relative;
+            height: 260px;
+            overflow: hidden;
+            background-color: var(--studio-surface-muted);
+        }
+        .mood-img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mood-card:hover .mood-img { transform: scale(1.05); }
+        .room-tag {
+            position: absolute; top: 16px; left: 16px;
+            background: var(--wood-dark);
+            color: #ffffff;
+            padding: 6px 14px; border-radius: 8px;
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Luxury Enterprise Table Registry Architecture */
+        .table-panel {
+            background-color: var(--studio-surface);
+            border: 1px solid var(--border-studio);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(109, 93, 80, 0.03);
+            overflow: hidden;
+        }
+        .studio-table { margin-bottom: 0; }
+        .studio-table th {
+            background-color: var(--studio-surface-muted);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 20px 24px;
+            border-bottom: 2px solid var(--border-studio);
+        }
+        .studio-table td {
+            padding: 22px 24px;
+            vertical-align: middle;
+            background-color: var(--studio-surface);
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-studio);
+        }
+
+        /* Procurement Workflow Tracking Markers */
+        .procure-status {
+            padding: 6px 14px; border-radius: 6px;
+            font-size: 0.75rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .status-delivered { background-color: #e8f5e9; color: #2e7d32; }
+        .status-ordered { background-color: #e3f2fd; color: #1565c0; }
+        .status-pending { background-color: #fff8e1; color: #f57f17; }
+
+        /* Solid Interface Control Layouts */
+        .btn-action-primary {
+            background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-medium) 100%);
+            color: #ffffff !important; font-weight: 600; font-size: 0.95rem;
+            padding: 14px 28px; border-radius: 8px; border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-action-primary:hover {
+            box-shadow: 0 6px 18px rgba(62, 39, 35, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-filter {
+            background-color: var(--studio-surface);
+            border: 1px solid var(--border-studio);
+            color: var(--text-secondary);
+            font-size: 0.85rem; font-weight: 600;
+            padding: 10px 20px; border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .btn-filter.active, .btn-filter:hover {
+            background-color: var(--wood-dark);
+            color: #ffffff !important;
+            border-color: var(--wood-dark);
+        }
+
+        /* Form Custom Elements */
+        .studio-input, .studio-select {
+            background-color: #faf8f5 !important;
+            border: 1px solid var(--border-studio) !important;
+            color: var(--text-primary) !important;
+            padding: 14px; border-radius: 8px;
+        }
+        .studio-input:focus, .studio-select:focus {
+            border-color: var(--wood-medium) !important;
+            box-shadow: 0 0 0 3px rgba(121, 85, 72, 0.15) !important;
+        }
+
+        /* Deep Architectural Heavy Footprint Footer */
+        .studio-heavy-footer {
+            background-color: var(--wood-dark);
+            color: var(--wood-light);
+            padding: 80px 0 30px 0;
+            border-top: 6px solid var(--accent-gold);
+        }
+        .footer-heading {
+            font-family: var(--font-serif);
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 25px;
+            font-size: 1.2rem;
+            letter-spacing: 0.03em;
+        }
+        .footer-link {
+            color: var(--wood-light);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .footer-link:hover {
+            color: #ffffff;
+            transform: translateX(4px);
+        }
+        #footer-map-canvas {
+            height: 220px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .social-circle-node {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.06);
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #ffffff; text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .social-circle-node:hover {
+            background-color: var(--accent-gold);
+            color: var(--wood-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Native Premium Header Navigation Link System -->
+    <nav class="navbar navbar-expand-lg navbar-light studio-navbar fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#dashboard"><i class="fa-solid fa-chair-office text-warning me-2"></i>Interio<span>Plan</span>.</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#studioNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="studioNav">
+                <ul class="navbar-nav ms-auto gap-1">
+                    <li class="nav-item"><a class="nav-link studio-nav-link active" href="#dashboard" onclick="switchActiveNav(this)">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link studio-nav-link" href="#moodboard" onclick="switchActiveNav(this)">Moodboard Spec</a></li>
+                    <li class="nav-item"><a class="nav-link studio-nav-link" href="#sourcing" onclick="switchActiveNav(this)">Sourcing Ledger</a></li>
+                    <li class="nav-item"><a class="nav-link studio-nav-link" href="#footer-contact" onclick="switchActiveNav(this)">Contact Studio</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Immersive Massive Architectural Focus Hero Section -->
+    <header id="dashboard" class="studio-immersive-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7 col-lg-9">
+                    <div class="hero-glass-panel">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill mb-3" style="background-color: rgba(121, 85, 72, 0.1); border: 1px solid rgba(121, 85, 72, 0.2);">
+                            <i class="fa-solid fa-compass-drafting text-important"></i>
+                            <span style="color: var(--wood-dark); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">Premium Partex & Lumber Logistics Console</span>
+                        </div>
+                        <h1 class="display-4 fw-bold text-important font-serif mb-3">Luxury Timber & Interior Procurement Architecture</h1>
+                        <p class="text-dimmed fs-6 mb-4">Unified workspace console managing artisanal custom furniture sourcing, material spec matrices, live cost parameters, and verified master artisan pipelines.</p>
+                        <div class="d-flex flex-wrap gap-3">
+                            <button class="btn btn-action-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                                <i class="fa-solid fa-circle-plus me-2"></i>Integrate Sourcing Spec
+                            </button>
+                            <a href="#sourcing" class="btn btn-filter px-4 py-3 d-inline-flex align-items-center">Review Complete Ledger</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Metrics Analytical Dashboard Panel -->
+    <main class="py-5" style="background-color: var(--studio-bg);">
+        <div class="container">
+            <div class="row g-4 mb-5">
+                <div class="col-xl-3 col-md-6">
+                    <div class="metric-card active-metric">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-dimmed small fw-bold d-block mb-1">AGGREGATE BUDGET LIMIT</span>
+                                <h3 class="text-important fw-bold mb-0" id="metric-budget">$120,000.00</h3>
+                            </div>
+                            <div class="metric-icon" style="background-color: var(--studio-surface-muted); color: var(--wood-dark);"><i class="fa-solid fa-chart-line-up"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-dimmed small fw-bold d-block mb-1">ALLOCATED DISBURSEMENTS</span>
+                                <h3 class="text-important fw-bold mb-0" id="metric-spent">$48,400.00</h3>
+                            </div>
+                            <div class="metric-icon" style="background-color: rgba(121, 85, 72, 0.08); color: var(--wood-medium);"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-dimmed small fw-bold d-block mb-1">VERIFIED CLEARANCE RATIO</span>
+                                <h3 class="text-important fw-bold mb-0" id="metric-ratio">66%</h3>
+                            </div>
+                            <div class="metric-icon" style="background-color: #e8f5e9; color: #2e7d32;"><i class="fa-solid fa-badge-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="metric-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-dimmed small fw-bold d-block mb-1">AVAILABLE LIQUID MARGIN</span>
+                                <h3 class="text-important fw-bold mb-0 text-success" id="metric-balance">$71,600.00</h3>
+                            </div>
+                            <div class="metric-icon" style="background-color: #fff8e1; color: var(--accent-gold);"><i class="fa-solid fa-piggy-bank"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Visual Moodboard Gallery Track Deck -->
+    <section id="moodboard" style="background-color: var(--studio-surface-muted); border-top: 1px solid var(--border-studio);">
+        <div class="container">
+            <div class="row align-items-end mb-4">
+                <div class="col-md-6">
+                    <h2 class="font-serif fw-bold text-important mb-1">Materiality Board & Visual Curation</h2>
+                    <p class="text-dimmed mb-0">Visual assignment configuration tracking raw material wood grains and installations.</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <div class="d-inline-flex gap-2 bg-white p-2 rounded-3 border border-secondary border-opacity-10">
+                        <button class="btn btn-filter active" onclick="filterMoodboard('All', this)">All Nodes</button>
+                        <button class="btn btn-filter" onclick="filterMoodboard('Furniture', this)">Furniture</button>
+                        <button class="btn btn-filter" onclick="filterMoodboard('Lighting', this)">Lighting</button>
+                        <button class="btn btn-filter" onclick="filterMoodboard('Decoration', this)">Decoration</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4" id="moodboardContainer">
+                <!-- Item 1 -->
+                <div class="col-xl-4 col-md-6 mood-item-card" data-category="Furniture">
+                    <div class="mood-card h-100">
+                        <div class="mood-img-wrapper">
+                            <span class="room-tag">Executive Boardroom</span>
+                            <img src="https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?auto=format&fit=crop&w=800&q=80" class="mood-img" alt="Walnut Desk">
+                        </div>
+                        <div class="p-4">
+                            <h5 class="text-important fw-bold mb-2">Natural Solid Walnut Executive Desk</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                                <div>
+                                    <span class="text-dimmed d-block small">Contract Estimation</span>
+                                    <span class="text-important fw-bold text-dark">$14,500</span>
+                                </div>
+                                <span class="procure-status status-delivered"><i class="fa-solid fa-circle-check"></i> Delivered</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 2 -->
+                <div class="col-xl-4 col-md-6 mood-item-card" data-category="Furniture">
+                    <div class="mood-card h-100">
+                        <div class="mood-img-wrapper">
+                            <span class="room-tag">Living Antechamber</span>
+                            <img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=800&q=80" class="mood-img" alt="Partex Wardrobe">
+                        </div>
+                        <div class="p-4">
+                            <h5 class="text-important fw-bold mb-2">Premium Partex Veneer Credenza</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                                <div>
+                                    <span class="text-dimmed d-block small">Contract Estimation</span>
+                                    <span class="text-important fw-bold text-dark">$6,200</span>
+                                </div>
+                                <span class="procure-status status-ordered"><i class="fa-solid fa-circle-notch fa-spin"></i> Processing</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Item 3 -->
+                <div class="col-xl-4 col-md-6 mood-item-card" data-category="Lighting">
+                    <div class="mood-card h-100">
+                        <div class="mood-img-wrapper">
+                            <span class="room-tag">Main Gallery Space</span>
+                            <img src="https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=800&q=80" class="mood-img" alt="Pendant Lighting">
+                        </div>
+                        <div class="p-4">
+                            <h5 class="text-important fw-bold mb-2">Linear Timber Accent Pendant Light</h5>
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                                <div>
+                                    <span class="text-dimmed d-block small">Contract Estimation</span>
+                                    <span class="text-important fw-bold text-dark">$3,400</span>
+                                </div>
+                                <span class="procure-status status-pending"><i class="fa-solid fa-clock"></i> Hold Strategy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sourcing Ledger Operations Registry Section -->
+    <section id="sourcing">
+        <div class="container">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div>
+                    <h2 class="font-serif fw-bold text-important mb-1">Studio Procurement Ledger Sheet</h2>
+                    <p class="text-dimmed mb-0">Legal database processing item specifications, transactions, and assigned carpenter streams.</p>
+                </div>
+                <div>
+                    <button class="btn btn-outline-secondary border-secondary text-dark px-4 py-2 fw-semibold" onclick="exportLedgerData()">
+                        <i class="fa-solid fa-file-export me-2"></i>Export Current Records (.csv)
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-panel">
+                <div class="table-responsive">
+                    <table class="table studio-table align-middle" id="ledgerTable">
+                        <thead>
+                            <tr>
+                                <th>Item Specification Details</th>
+                                <th>Classification Group</th>
+                                <th>Contracted Vendor Node</th>
+                                <th>Financial Value</th>
+                                <th>Procurement State</th>
+                                <th class="text-center">System Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-category="Furniture">
+                                <td>
+                                    <span class="text-important d-block mb-0.5">Natural Solid Walnut Executive Desk</span>
+                                    <small class="text-dimmed font-monospace">UUID-88912-WN</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border border-secondary border-opacity-50 px-2 py-1.5">Furniture</span></td>
+                                <td class="text-dimmed">Artisan Woodcraft Labs</td>
+                                <td class="text-important fw-bold">$14,500.00</td>
+                                <td><span class="procure-status status-delivered"><i class="fa-solid fa-circle-check"></i> Delivered</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light border text-danger" onclick="purgeLedgerRow(this, 14500)"><i class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-category="Furniture">
+                                <td>
+                                    <span class="text-important d-block mb-0.5">Premium Partex Veneer Credenza</span>
+                                    <small class="text-dimmed font-monospace">UUID-33211-PT</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border border-secondary border-opacity-50 px-2 py-1.5">Furniture</span></td>
+                                <td class="text-dimmed">Partex Heavy Manufacturing</td>
+                                <td class="text-important fw-bold">$6,200.00</td>
+                                <td><span class="procure-status status-ordered"><i class="fa-solid fa-circle-notch fa-spin"></i> Ordered</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light border text-danger" onclick="purgeLedgerRow(this, 6200)"><i class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                            <tr data-category="Lighting">
+                                <td>
+                                    <span class="text-important d-block mb-0.5">Linear Timber Accent Pendant Light</span>
+                                    <small class="text-dimmed font-monospace">UUID-44021-LT</small>
+                                </td>
+                                <td><span class="badge bg-light text-dark border border-secondary border-opacity-50 px-2 py-1.5">Lighting</span></td>
+                                <td class="text-dimmed">Nordic Illumination Co.</td>
+                                <td class="text-important fw-bold">$3,400.00</td>
+                                <td><span class="procure-status status-pending"><i class="fa-solid fa-clock"></i> Pending</span></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light border text-danger" onclick="purgeLedgerRow(this, 3400)"><i class="fa-solid fa-trash-can"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Structural Workspace Data Entry Portal Modal Framework -->
+    <div class="modal fade" id="addItemModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: var(--studio-surface); color: var(--text-primary); border: 1px solid var(--border-studio); border-radius: 20px;">
+                <div class="modal-header px-4 pt-4 border-0">
+                    <h5 class="modal-title font-serif text-important fw-bold"><i class="fa-solid fa-plus-circle text-warning me-2"></i>Append Sourcing Framework</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="studioSourcingForm">
+                    <div class="modal-body px-4">
+                        <div class="mb-3">
+                            <label class="form-label text-dimmed small fw-bold">Structural Item Name/Spec</label>
+                            <input type="text" id="formItemName" class="form-control studio-input" placeholder="e.g. Matte Roasted Oak Coffee Table" required>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-dimmed small fw-bold">Classification</label>
+                                <select id="formCategory" class="form-select studio-select">
+                                    <option value="Furniture">Furniture</option>
+                                    <option value="Lighting">Lighting</option>
+                                    <option value="Decoration">Decoration</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-dimmed small fw-bold">Contract Value (USD)</label>
+                                <input type="number" id="formPrice" class="form-control studio-input" placeholder="3200" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-dimmed small fw-bold">Contractor Node / Vendor</label>
+                            <input type="text" id="formVendor" class="form-control studio-input" placeholder="e.g. Partex Furniture Corp" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label text-dimmed small fw-bold">Procurement Initialization State</label>
+                            <select id="formStatus" class="form-select studio-select">
+                                <option value="Pending">Awaiting Wire / Pending</option>
+                                <option value="Ordered">In-Transit / Ordered</option>
+                                <option value="Delivered">Verified / Delivered</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer px-4 pb-4 border-0">
+                        <button type="button" class="btn btn-light border px-4 py-2.5" data-bs-dismiss="modal">Abstain</button>
+                        <button type="submit" class="btn btn-action-primary px-4 py-2.5">Commit To Ledger</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comprehensive High-Footprint Enterprise Studio Footer System -->
+    <footer id="footer-contact" class="studio-heavy-footer">
+        <div class="container">
+            <div class="row g-5">
+                <!-- Col 1: Corporate Essence -->
+                <div class="col-xl-4 col-lg-4 col-md-12">
+                    <h3 class="navbar-brand font-serif text-white fs-3 mb-3"><i class="fa-solid fa-chair-office text-warning me-2"></i>InterioPlan</h3>
+                    <p class="small lh-lg" style="color: rgba(215,204,200,0.75);">A premier architectural interior design logistics and component item monitoring matrix. Assuring total cost compliance across luxury lumber, partex installations, and premium hospitality projects globally.</p>
+                    <div class="d-flex gap-2.5 mt-4">
+                        <a href="#" class="social-circle-node"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="social-circle-node"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-circle-node"><i class="fa-brands fa-whatsapp"></i></a>
+                        <a href="#" class="social-circle-node"><i class="fa-brands fa-facebook-f"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Navigation Junction Matrix -->
+                <div class="col-xl-2 col-lg-2 col-md-6 col-6">
+                    <h5 class="footer-heading">Studio Modules</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#dashboard" class="footer-link small">Control Dashboard</a></li>
+                        <li><a href="#moodboard" class="footer-link small">Visual Moodboard</a></li>
+                        <li><a href="#sourcing" class="footer-link small">Sourcing Ledger</a></li>
+                        <li><a href="#" class="footer-link small">Vendor Index</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Direct Studio Communication Interface -->
+                <div class="col-xl-3 col-lg-3 col-md-6 col-6">
+                    <h5 class="footer-heading">Contact Node</h5>
+                    <ul class="list-unstyled text-light small lh-lg" style="color: rgba(215,204,200,0.8) !important;">
+                        <li class="mb-2"><i class="fa-solid fa-location-dot text-warning me-2"></i> Level 12, Partex Tower, Purana Paltan, Dhaka, Bangladesh</li>
+                        <li class="mb-2"><i class="fa-solid fa-envelope text-warning me-2"></i> support@interioplan.studio</li>
+                        <li class="mb-2"><i class="fa-solid fa-phone text-warning me-2"></i> +880 1712-345678</li>
+                        <li><i class="fa-solid fa-clock text-warning me-2"></i> Sat - Thu: 09:00 AM - 06:00 PM</li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Leaflet Dynamic Map Component -->
+                <div class="col-xl-3 col-lg-3 col-md-12">
+                    <h5 class="footer-heading">Studio Core Geolocation</h5>
+                    <div id="footer-map-canvas"></div>
+                </div>
+            </div>
+
+            <!-- Operational Meta Border Lining Info -->
+            <div class="mt-5 pt-4 border-top border-secondary border-opacity-25 text-center text-muted font-monospace" style="font-size: 0.8rem; color: rgba(215,204,200,0.5) !important;">
+                <p class="m-0">&copy; 2026 InterioPlan Studio. All Rights Reserved. Engineered for Elite Spatial Design Workspaces.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Ecosystem Engine & Leaflet Mapping Stack Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        // System State Data Registries
+        let globalProjectBudget = 120000.00;
+        let globalAggregateSpent = 0.00;
+
+        // Dynamic Metric Calculations Runtime Handler
+        function synchronizeSystemMetrics() {
+            const rowValues = document.querySelectorAll('#ledgerTable tbody tr');
+            let incrementalSum = 0;
+            let deliveryCompletes = 0;
+
+            rowValues.forEach(row => {
+                const numericString = row.querySelector('td:nth-child(4)').textContent.replace(/[$,]/g, '');
+                incrementalSum += parseFloat(numericString);
+                
+                if(row.innerHTML.includes('status-delivered')) {
+                    deliveryCompletes++;
+                }
+            });
+
+            globalAggregateSpent = incrementalSum;
+            const operationalBalance = globalProjectBudget - globalAggregateSpent;
+            const performanceRatio = rowValues.length > 0 ? Math.round((deliveryCompletes / rowValues.length) * 100) : 0;
+
+            // Render calculations into UI layers
+            document.getElementById('metric-spent').textContent = `$${globalAggregateSpent.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-balance').textContent = `$${operationalBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-ratio').textContent = `${performanceRatio}%`;
+
+            if(operationalBalance < 20000) {
+                document.getElementById('metric-balance').className = "text-important fw-bold mb-0 text-danger";
+            } else {
+                document.getElementById('metric-balance').className = "text-important fw-bold mb-0 text-success";
+            }
+        }
+
+        // Functional Navbar Item Navigation Context Mapping
+        function switchActiveNav(element) {
+            document.querySelectorAll('.studio-nav-link').forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Real-time Visual Moodboard Category Filtering Array Engine
+        function filterMoodboard(category, hostButton) {
+            const hostContainer = hostButton.parentElement;
+            hostContainer.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            hostButton.classList.add('active');
+
+            const componentCards = document.querySelectorAll('.mood-item-card');
+            componentCards.forEach(card => {
+                if(category === 'All' || card.getAttribute('data-category') === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Form Submission and Dynamic DOM Allocation Cycle Process Block
+        document.getElementById('studioSourcingForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const targetName = document.getElementById('formItemName').value;
+            const targetCategory = document.getElementById('formCategory').value;
+            const targetPrice = parseFloat(document.getElementById('formPrice').value);
+            const targetVendor = document.getElementById('formVendor').value;
+            const targetStatus = document.getElementById('formStatus').value;
+
+            const structuredUUID = 'UUID-' + Math.floor(10000 + Math.random() * 90000) + '-PT';
+
+            // Phase A: Push Array Object into Ledger Registry Table Matrix
+            const masterTableBody = document.querySelector('#ledgerTable tbody');
+            const generatedRow = document.createElement('tr');
+            generatedRow.setAttribute('data-category', targetCategory);
+
+            let renderBadgeHtml = '';
+            if(targetStatus === 'Delivered') renderBadgeHtml = `<span class="procure-status status-delivered"><i class="fa-solid fa-circle-check"></i> Delivered</span>`;
+            if(targetStatus === 'Ordered') renderBadgeHtml = `<span class="procure-status status-ordered"><i class="fa-solid fa-circle-notch fa-spin"></i> Ordered</span>`;
+            if(targetStatus === 'Pending') renderBadgeHtml = `<span class="procure-status status-pending"><i class="fa-solid fa-clock"></i> Pending</span>`;
+
+            generatedRow.innerHTML = `
+                <td>
+                    <span class="text-important d-block mb-0.5">${targetName}</span>
+                    <small class="text-dimmed font-monospace">${structuredUUID}</small>
+                </td>
+                <td><span class="badge bg-light text-dark border border-secondary border-opacity-50 px-2 py-1.5">${targetCategory}</span></td>
+                <td class="text-dimmed">${targetVendor}</td>
+                <td class="text-important fw-bold">$${targetPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td>${renderBadgeHtml}</td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-light border text-danger" onclick="purgeLedgerRow(this, ${targetPrice})"><i class="fa-solid fa-trash-can"></i></button>
+                </td>
+            `;
+            masterTableBody.appendChild(generatedRow);
+
+            // Phase B: Build UI Card Item Node View and Append straight into Visual Moodboard Display Grid
+            const moodContainerNode = document.getElementById('moodboardContainer');
+            const generatedCard = document.createElement('div');
+            generatedCard.className = 'col-xl-4 col-md-6 mood-item-card';
+            generatedCard.setAttribute('data-category', targetCategory);
+
+            let fallBackImageAsset = 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80';
+            if(targetCategory === 'Lighting') fallBackImageAsset = 'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?auto=format&fit=crop&w=800&q=80';
+            if(targetCategory === 'Decoration') fallBackImageAsset = 'https://images.unsplash.com/photo-1534349762230-e0cadf78f5db?auto=format&fit=crop&w=800&q=80';
+
+            generatedCard.innerHTML = `
+                <div class="mood-card h-100">
+                    <div class="mood-img-wrapper">
+                        <span class="room-tag">Added Spec</span>
+                        <img src="${fallBackImageAsset}" class="mood-img" alt="Sourced Timber Concept">
+                    </div>
+                    <div class="p-4">
+                        <h5 class="text-important fw-bold mb-2">${targetName}</h5>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top border-secondary border-opacity-10">
+                            <div>
+                                <span class="text-dimmed d-block small">Contract Estimation</span>
+                                <span class="text-important fw-bold text-dark">$${targetPrice.toLocaleString()}</span>
+                            </div>
+                            ${renderBadgeHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            moodContainerNode.appendChild(generatedCard);
+
+            // Phase C: Recompute Metrics and safely Close Portal Input UI
+            synchronizeSystemMetrics();
+            document.getElementById('studioSourcingForm').reset();
+            const modalDomTarget = document.getElementById('addItemModal');
+            bootstrap.Modal.getInstance(modalDomTarget).hide();
+        });
+
+        // Delete Row Operations Logic Block
+        function purgeLedgerRow(actionButton, itemValue) {
+            if(confirm("Confirm permanent removal of requested item spec row?")) {
+                const targetRow = actionButton.closest('tr');
+                targetRow.remove();
+                synchronizeSystemMetrics();
+            }
+        }
+
+        // Export Entire Ledger Architecture Schema Data Array directly into .csv Structure
+        function exportLedgerData() {
+            let compiledCsvString = 'Item Name,UUID,Category,Vendor,Price\n';
+            const tableRows = document.querySelectorAll('#ledgerTable tbody tr');
+            
+            tableRows.forEach(row => {
+                const name = row.querySelector('.text-important').textContent.trim();
+                const uuid = row.querySelector('.font-monospace').textContent.trim();
+                const category = row.querySelector('.badge').textContent.trim();
+                const vendor = row.querySelectorAll('td')[2].textContent.trim();
+                const price = row.querySelectorAll('td')[3].textContent.replace(/[$,]/g, '').trim();
+                
+                compiledCsvString += `"${name}","${uuid}","${category}","${vendor}","${price}"\n`;
+            });
+
+            const dataBlob = new Blob([compiledCsvString], { type: 'text/csv' });
+            const temporaryDownloadNode = document.createElement('a');
+            temporaryDownloadNode.href = window.URL.createObjectURL(dataBlob);
+            temporaryDownloadNode.download = 'studio_timber_procurement_dataset.csv';
+            temporaryDownloadNode.click();
+        }
+
+        // Application Runtime Mounting Initialization Loop Lifecycle Thread
+        window.onload = function() {
+            synchronizeSystemMetrics();
+            
+            // Render High Performance Interactive Map Canvas inside Footer Frame via Leaflet API Engine (Dhaka Coordinates)
+            const mapInstance = L.map('footer-map-canvas').setView([23.7286, 90.4107], 14);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(mapInstance);
+            
+            L.marker([23.7286, 90.4107]).addTo(mapInstance)
+                .bindPopup('<b>InterioPlan Studio Corporate Office</b><br>Purana Paltan, Dhaka.')
+                .openPopup();
+        };
+    </script>
+</body>
+</html>
